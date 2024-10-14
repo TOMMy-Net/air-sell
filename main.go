@@ -14,7 +14,8 @@ func main() {
 	mainWindow.SetIcon(internal.GetIcon())
 	mainWindow.Resize(fyne.Size{Width: 1000, Height: 700})
 	mainWindow.SetMaster()
-
+	mainWindow.CenterOnScreen()
+	internal.SignInWindow(mainWindow)
 	mainWindow.Show()
 	myApp.Run()
 
