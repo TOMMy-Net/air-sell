@@ -37,6 +37,7 @@ func main() {
 	var newSettings = internal.NewSettings()
 	newSettings.Window = mainWindow
 	newSettings.Storage = storage
+	newSettings.App = myApp
 	newSettings.SignInWindow()
 
 	mainWindow.Show()

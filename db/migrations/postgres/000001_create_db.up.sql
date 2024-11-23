@@ -7,8 +7,8 @@ CREATE TABLE IF NOT EXISTS "tickets" (
 	"departure_time" timestamp NOT NULL,
 	"arrival_time" timestamp NOT NULL,
 	"quantity" int NOT NULL,
-	"luggage" varchar(255) NOT NULL,
-	"hand_baggage" varchar(255) NOT NULL,
+	"luggage" varchar(255) NOT NULL DEFAULT '',
+	"hand_baggage" varchar(255) NOT NULL DEFAULT '',
 	"price" decimal(10,2) NOT NULL,
 	PRIMARY KEY("id")
 );
@@ -27,6 +27,7 @@ CREATE TABLE IF NOT EXISTS "buy_history" (
 	"ticket_id" VARCHAR(255) NOT NULL,
 	"user_id" int NOT NULL,
 	"buy_time" timestamp NOT NULL,
+	"count" int NOT NULL, 
 	PRIMARY KEY("id")
 );
 
@@ -44,8 +45,8 @@ CREATE TABLE IF NOT EXISTS "passport_data" (
 	"id" serial NOT NULL UNIQUE,
 	"name" varchar(255) NOT NULL,
 	"surname" varchar(255) NOT NULL,
-	"patronymic" varchar(255),
-	"passport_series_and_number" varchar(255) NOT NULL,
+	"patronymic" varchar(255) NOT NULL DEFAULT '',
+	"passport_series_and_number" varchar(255) NOT NULL UNIQUE,
 	"gender" char(1) NOT NULL CHECK(gender IN ('w', 'm')),
 	"validity_period" date,
 	"date_of_birth" date NOT NULL,
