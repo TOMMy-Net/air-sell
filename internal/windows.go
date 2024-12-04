@@ -106,23 +106,27 @@ func (s *Settings) SignUpWindow() {
 
 	form.OnSubmit = func() {
 		if password.Text == confirmPassword.Text {
-			m := models.UserEntry{
-				Email:    email.Text,
-				Password: password.Text,
-			}
-			if err := tools.Validate(m); err != nil {
-				dialog.ShowInformation("Ошибка", "Не все поля заполнены", s.Window)
-			} else {
-				if res, err := s.Storage.CreateUser(models.User{Email: m.Email, Password: m.Password}); err != nil {
-					dialog.ShowInformation("Ошибка", "Не правильные почта или пароль", s.Window)
-				} else {
-					s.Account = &models.User{
-						ID:       int(res),
-						Email:    m.Email,
-						Password: m.Password,
-					}
-					s.MainWindow(models.TicketsSearch{})
+			if len([]rune(password.Text)) > 6 {
+				m := models.UserEntry{
+					Email:    email.Text,
+					Password: password.Text,
 				}
+				if err := tools.Validate(m); err != nil {
+					dialog.ShowInformation("Ошибка", "Не все поля заполнены", s.Window)
+				} else {
+					if res, err := s.Storage.CreateUser(models.User{Email: m.Email, Password: m.Password}); err != nil {
+						dialog.ShowInformation("Ошибка", "Такой аккаунт уже существует", s.Window)
+					} else {
+						s.Account = &models.User{
+							ID:       int(res),
+							Email:    m.Email,
+							Password: m.Password,
+						}
+						s.MainWindow(models.TicketsSearch{})
+					}
+				}
+			} else {
+				dialog.ShowInformation("Ошибка", "Пароль меньше 6 символов", s.Window)
 			}
 		} else {
 			dialog.ShowInformation("Ошибка", "Пароли не совпадают", s.Window)
@@ -220,7 +224,7 @@ func (s *Settings) TicketWindow(t *models.Ticket) {
 	})
 
 	var retButton = widget.NewButton("Назад", func() {
-		
+
 		ticket := returnTicketEntry(t)
 		s.MainWindow(ticket)
 	})
@@ -267,14 +271,13 @@ func (s *Settings) BuyWindow(t *models.Ticket) {
 	}
 
 	var buttonBuy = widget.NewButton("Оплатить", func() {
-		if ticketCols > 0 {
+		if ticketCols > 0 && t.Quantity >= ticketCols {
 			dialog.ShowConfirm("Подтверждение оплаты", fmt.Sprintf("Колличество билетов: %d\nЦена: %f", ticketCols, t.Price*float64(ticketCols)), func(b bool) {
 				if b {
 					// После подтверждения происходит оплата и обновление данных в БД
 					// Затем происходит отправка билетов пользователю
 					err := s.Storage.MinusTicketCount(t.ID, ticketCols)
 					if err != nil {
-
 						dialog.ShowInformation("Ошибка", "Не возможно обновить данные билетов", s.Window)
 						return
 					}
@@ -301,7 +304,7 @@ func (s *Settings) BuyWindow(t *models.Ticket) {
 				}
 			}, s.Window)
 		} else {
-			dialog.ShowInformation("Ошибка", "Не возможно купить билет, выберите паспорта", s.Window)
+			dialog.ShowInformation("Ошибка", "Не возможно купить билет, выберите паспорта или проверьте доступность билета", s.Window)
 		}
 	})
 
@@ -366,10 +369,15 @@ func (s *Settings) BuyWindow(t *models.Ticket) {
 // Окно профиля
 func (s *Settings) ProfileWindow() {
 	var userInfo = widget.NewLabel(fmt.Sprintf("ID: %d\nEmail: %s\nПароль: %s", s.Account.ID, s.Account.Email, s.Account.Password))
-	var exitButton = widget.NewButton("Выйти", func() {
+	var exitButton = widget.NewButtonWithIcon("Выйти", theme.CancelIcon(), func() {
 		s.Account = &models.User{}
 		s.SignInWindow()
 	})
+
+	var buyHistory = widget.NewButton("История покупок", func() {
+		s.HistoryWindow()
+	})
+
 	var cardInfo = widget.NewCard("", "Информация аккаунта", userInfo)
 	var buttonBack = widget.NewButton("Назад", func() {
 		s.MainWindow(models.TicketsSearch{})
@@ -415,6 +423,7 @@ func (s *Settings) ProfileWindow() {
 		container.NewCenter(
 			container.NewVBox(
 				cardInfo,
+				buyHistory,
 				passportsButton,
 				addPasportbutton,
 				exitButton,

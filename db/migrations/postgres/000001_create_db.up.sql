@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS "tickets" (
 
 CREATE TABLE IF NOT EXISTS "users" (
 	"id" serial NOT NULL UNIQUE,
-	"email" varchar(255) NOT NULL,
+	"email" varchar(255) NOT NULL UNIQUE,
 	"password" varchar(255) NOT NULL,
 	PRIMARY KEY("id")
 );

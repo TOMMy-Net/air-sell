@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
@@ -166,4 +167,41 @@ func returnTicketEntry(t *models.Ticket) models.TicketsSearch {
 		ticket.Date_from = time.Format("2006-01-02")
 	}
 	return ticket
+}
+
+
+func (s *Settings) HistoryWindow()  {
+	retButton := widget.NewButton("Назад", func() {
+		s.ProfileWindow()
+	})
+
+	history, err := s.Storage.GetBuyHistory(s.Account.ID)
+	if err != nil {
+		dialog.ShowInformation("Ошибка", "Ошибка получения истории", s.Window)
+	}else{
+		grid := container.NewGridWithColumns(2)
+		for _, v := range history {
+			grid.Add(widget.NewCard("", fmt.Sprintf("ID билета: %s", v.Ticket.ID), container.NewVBox(
+				widget.NewLabel(fmt.Sprintf("Дата покупки: %s", v.BuyTime)),
+				widget.NewLabel(fmt.Sprintf("Цена: %f", v.Ticket.Price)),
+				widget.NewLabel(fmt.Sprintf("Колличество: %d", v.Count)),
+			)))
+		}
+		s.Window.SetContent(
+			container.NewBorder(
+				container.NewBorder(
+					nil, 
+					nil,
+					retButton,
+					nil,
+				),
+				nil,
+				nil, 
+				nil,
+				container.NewVScroll(
+					grid,
+				),
+			),
+		)
+	}
 }

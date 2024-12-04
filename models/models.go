@@ -54,11 +54,11 @@ type UserEntry struct {
 }
 
 type BuyHistory struct {
-	ID      int
-	Ticket  Ticket
-	UserId  int
-	BuyTime string
-	Count   int
+	ID      int    `db:"id"`
+	Ticket  Ticket `db:"ticket"`
+	UserId  int    `db:"user_id"`
+	BuyTime string `db:"buy_time"`
+	Count   int    `db:"count"`
 }
 
 // Функция создания структуры билета
