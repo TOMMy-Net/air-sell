@@ -193,7 +193,7 @@ func (s *Settings) MainWindow(t models.TicketsSearch) {
 			if len(tickets) > 0 {
 				for i := 0; i < len(tickets); i++ {
 					t := tickets[i]
-					stack.Add(widget.NewButton(fmt.Sprintf("%s (%s) \u27F6 %s (%s) \n %s \u27F6 %s \n Цена: %.2f", t.DepartureFrom.City, t.DepartureFrom.Iata, t.ArrivalAt.City, t.ArrivalAt.Iata, t.DepartureTime, t.ArrivalTime, t.Price), func() {
+					stack.Add(widget.NewButton(fmt.Sprintf("%s (%s) \u27F6 %s (%s) \n %s \u27F6 %s \n Цена: %.2f \u20BD", t.DepartureFrom.City, t.DepartureFrom.Iata, t.ArrivalAt.City, t.ArrivalAt.Iata, t.DepartureTime, t.ArrivalTime, t.Price), func() {
 						s.TicketWindow(&t)
 					}))
 				}
@@ -217,7 +217,7 @@ func (s *Settings) TicketWindow(t *models.Ticket) {
 	var timeInfo = widget.NewLabel(fmt.Sprintf("%s \u27F6 %s", t.DepartureTime, t.ArrivalTime))
 	var count = widget.NewLabel(fmt.Sprintf("Колличество: %d", t.Quantity))
 	var baggInfo = widget.NewLabel(fmt.Sprintf("Багаж: %s  Ручная кладь: %s", t.Luggage, t.HandBaggage))
-	var priceInfo = widget.NewLabel(fmt.Sprintf("Цена: %.2f", t.Price))
+	var priceInfo = widget.NewLabel(fmt.Sprintf("Цена: %.2f \u20BD", t.Price))
 
 	var buyButton = widget.NewButton("Купить", func() {
 		s.BuyWindow(t)
@@ -272,7 +272,7 @@ func (s *Settings) BuyWindow(t *models.Ticket) {
 
 	var buttonBuy = widget.NewButton("Оплатить", func() {
 		if ticketCols > 0 && t.Quantity >= ticketCols {
-			dialog.ShowConfirm("Подтверждение оплаты", fmt.Sprintf("Колличество билетов: %d\nЦена: %f", ticketCols, t.Price*float64(ticketCols)), func(b bool) {
+			dialog.ShowConfirm("Подтверждение оплаты", fmt.Sprintf("Колличество билетов: %d\nЦена: %.2f \u20BD", ticketCols, t.Price*float64(ticketCols)), func(b bool) {
 				if b {
 					// После подтверждения происходит оплата и обновление данных в БД
 					// Затем происходит отправка билетов пользователю
@@ -336,7 +336,7 @@ func (s *Settings) BuyWindow(t *models.Ticket) {
 		selectPassports = widget.NewCheckGroup(
 			convPass, func(s []string) {
 				ticketCols = len(s)
-				ticketColsText = fmt.Sprintf("Колличество выбранных посажиров: %d", ticketCols)
+				ticketColsText = fmt.Sprintf("Колличество выбранных пассажиров: %d", ticketCols)
 				selectedPassports = s
 				cols.Reload()
 			},

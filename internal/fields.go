@@ -183,7 +183,7 @@ func (s *Settings) HistoryWindow()  {
 		for _, v := range history {
 			grid.Add(widget.NewCard("", fmt.Sprintf("ID билета: %s", v.Ticket.ID), container.NewVBox(
 				widget.NewLabel(fmt.Sprintf("Дата покупки: %s", v.BuyTime)),
-				widget.NewLabel(fmt.Sprintf("Цена: %f", v.Ticket.Price)),
+				widget.NewLabel(fmt.Sprintf("Цена: %.2f \u20BD", v.Ticket.Price)),
 				widget.NewLabel(fmt.Sprintf("Колличество: %d", v.Count)),
 			)))
 		}
